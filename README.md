@@ -7,4 +7,5 @@ This tool features a lua script to log nsf playback register writes into a .csv 
 ## Version history
 
 * 0.1: initial creation of program
+* 0.1.1: fixed the CRUST (by AnnoyedArt1256 - thx a lot!)
 -------
