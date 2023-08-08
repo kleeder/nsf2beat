@@ -177,14 +177,20 @@ read_data=(data, t)=>(
     chan4_freq=convert_freq_4(chan4_mode, current_order.substr(29, 1), current_order.substr(31, 1)),
     chan4_pulse = convert_chan4_wave(chan4_mode, chan4_freq),
 
-    (((t * (chan1_freq*256) / SAMP_RATE) % 256 < 256 * chan1_pulse / 100) * chan1_amp - chan1_amp / 2) +
-    (((t * (chan2_freq*256) / SAMP_RATE) % 256 < 256 * chan2_pulse / 100) * chan2_amp - chan2_amp / 2) +
+    chan1_phase += chan1_freq*256,
+    chan2_phase += chan2_freq*256,
+    chan3_phase += chan3_freq*32,
+    
+    (((chan1_phase / SAMP_RATE) % 256 < 256 * chan1_pulse / 100) * chan1_amp - chan1_amp / 2) +
+    (((chan2_phase / SAMP_RATE) % 256 < 256 * chan2_pulse / 100) * chan2_amp - chan2_amp / 2) +
 
-    ((17*abs(min(16-t*chan3_freq*32/SAMP_RATE%32|0,15)) / 2 + 204)/4) +
+    ((17*abs(min(16-chan3_phase/SAMP_RATE%32|0,15)) / 2 + 204)/4) +
     (((((floor(65536 * sin(chan4_pulse*chan4_pulse)) & 255)) * chan4_amp / 128) * 800 / 128)/4 + 64)
 ),
 
-DATA = [
+t?0:(chan1_phase=0,chan2_phase=0,chan3_phase=0),
+
+t?0:DATA = [
 """
     for row in apu_log:
         if row[0].startswith('==='):
